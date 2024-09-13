@@ -21,6 +21,7 @@ char*   strdup(const char* source)
     str[i] = 0;
     return (str);
 }
+
 /*Creates a new node and inserts it into the list in alphabetical order.
 On success, returns a pointer to the head of the list; on failure, returns NULL.*/
 t_book* add_book(t_book* head, const char* title, const char* author, const int year)
@@ -67,8 +68,7 @@ t_book* add_book(t_book* head, const char* title, const char* author, const int 
     return(head);
 }
 
-
-/*Displays the list of books*/
+/*Displays the list of books.*/
 void list_books(t_book* head)
 {
     while(head)
@@ -76,4 +76,33 @@ void list_books(t_book* head)
         printf("Title: %s, Author: %s, Year: %d\n", head->title, head->author, head->year);
         head = head->next;
     }
+}
+
+/*Frees all memory allocated for the library.*/
+void    free_library(t_book* head)
+{
+    t_book* tmp;
+    while(head)
+    {
+        tmp = head;
+        head = head->next;
+        free(tmp->author);
+        free(tmp->title);
+        free(tmp);
+        tmp = NULL;
+    }
+}
+
+/*Searches for the book by name.
+If it exists, prints the information; if not, prints a message indicating that it does not exist.*/
+void    search_book(t_book* head, char* title)
+{
+    while(head && strcmp(head->title, title))
+    {
+        head = head->next;
+    }
+    if(head)
+        printf("Title: %s, Author: %s, Year: %d\n", head->title, head->author, head->year);
+    else
+        printf("the book %s dosnt belong to the library\n", title);
 }
