@@ -30,28 +30,16 @@ t_book* add_book(t_book* head, const char* title, const char* author, const int 
     t_book* tmp = head;
 
     if(!title || !author)
-    {
-        fprintf (stderr, "Error: you must complete all the fields\n");
-        return (NULL);
-    }
+        return (exit_failure(head, "Error: you must complete all the fields\n"));
     new_book = (t_book*)malloc(sizeof(t_book));
     if(!new_book)
-    {
-        fprintf(stderr, "Error: memory couldn't be allocated\n");
-        return (NULL);
-    }
+        return (exit_failure(head, "Error: memory couldn't be allocated\n"));
     new_book->author = strdup(author);
     if(!new_book->author)
-    {
-        fprintf(stderr, "Error: memory couldn't be allocated\n");
-        return (NULL);
-    }
+        return (exit_failure(head, "Error: memory couldn't be allocated\n"));
     new_book->title = strdup(title);
     if(!new_book->title)
-    {
-        fprintf(stderr, "Error: memory couldn't be allocated\n");
-        return (NULL);
-    }
+        return (exit_failure(head, "Error: memory couldn't be allocated\n"));
     new_book->year = year;
     new_book->next = NULL;
     if(!head || strcmp(tmp->title, new_book->title) > 0)
@@ -73,7 +61,7 @@ void list_books(t_book* head)
 {
     while(head)
     {
-        printf("Title: %s, Author: %s, Year: %d\n", head->title, head->author, head->year);
+        print_book(head);
         head = head->next;
     }
 }
@@ -94,7 +82,7 @@ void    free_library(t_book* head)
 }
 
 /*Searches for the book by name.
-If it exists, prints the information; if not, prints a message indicating that it does not exist.*/
+If it exists, prints the information. If not, prints a message indicating that it does not exist.*/
 void    search_book(t_book* head, char* title)
 {
     while(head && strcmp(head->title, title))
@@ -105,4 +93,41 @@ void    search_book(t_book* head, char* title)
         printf("Title: %s, Author: %s, Year: %d\n", head->title, head->author, head->year);
     else
         printf("the book %s dosnt belong to the library\n", title);
+}
+
+/*Searches for the book by name.
+If it exists, removes the book. If not, prints a message indicating that it does not exist.*/
+void    remove_book(t_book** head, char* title)
+{
+    t_book* tmp = *head;
+    t_book* prev = NULL;
+    while(tmp && strcmp(tmp->title, title))
+    {
+        prev = tmp;
+        tmp = tmp->next;
+    }
+    if(tmp)
+    {
+        prev->next = tmp->next;
+        tmp->next = NULL;
+        printf("the book %s was removed\n", tmp->title);
+        free_library(tmp);
+    }
+    else
+        printf("the book %s dosnt belong to the library\n", title);
+}
+
+/*Modular function to print the information of the book*/
+void    print_book(t_book* book)
+{
+    printf("Title: %s, Author: %s, Year: %d\n", book->title, book->author, book->year);
+}
+
+/*Modular function to any errors.
+Prints the error message, frees all the memory and returns NULL*/
+void*    exit_failure(t_book* head, char* message)
+{
+    fprintf(stderr, "%s", message);
+    free_library(head);
+    return(NULL);
 }
